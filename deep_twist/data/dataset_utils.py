@@ -13,9 +13,8 @@ from skimage import io, transform
 from tqdm import tqdm
 
 
-class CornellGraspDataset2d(Dataset):
+class CornellGraspDataset(Dataset):
     def __init__(self, root_dir, transform=None):
-        self.root_dir = root_dir
         self.transform = transform 
         self.ids = []
         for fname in os.listdir(self.root_dir):
@@ -26,6 +25,19 @@ class CornellGraspDataset2d(Dataset):
 
     def __len__(self):
         return len(self.ids)
+
+    @staticmethod
+    def parse_depth(depth_path, depth_shape):
+        depth = np.zeros(depth_shape)
+        width = depth.shape[1]
+        with open(depth_path) as f:
+            for line in f.read().splitlines():
+                if line[0].isdigit():
+                    values = line.split(' ')
+                    z, depth_idx = float(values[2]), int(values[4])
+                    row, col = depth_idx // width, depth_idx % width
+                    depth[row, col] = z
+        return depth
 
     @staticmethod
     def parse_rects(rect_path, id):
@@ -152,33 +164,3 @@ class ResNetGrasp(nn.Module):
         x = self.features(x)
         x = x.view(x.size(0), -1)
         return self.classifier(x)
-
-
-def train_model(model, dataloader, num_epochs=25, criterion=None,
-                optimizer=None):
-    if criterion is None:
-        criterion = nn.MSELoss()
-
-    if optimizer is None:
-        optimizer = torch.optim.Adam(model.parameters())
-
-    for epoch in range(num_epochs):
-        print('Epoch {}/{}'.format(epoch, num_epochs-1))
-        model.train()
-
-        running_loss = 0.0
-        running_corrects = 0
-
-        for imgs, gts in tqdm(list(dataloader)[:1]):
-            optimizer.zero_grad()
-            props = model(imgs)
-            loss = criterion(props, gts)
-            loss.backward()
-            optimizer.step()
-            running_loss += loss.item() * imgs.size(0)
-            running_corrects += sum(test_proposals(props, gts))
-
-        epoch_loss = running_loss / 10
-        epoch_acc = running_corrects / 10
-
-        print('Loss: {}, Acc: {}'.format(epoch_loss, epoch_acc))
