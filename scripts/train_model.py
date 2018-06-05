@@ -31,7 +31,7 @@ def main():
                                                       transforms.RandomRotate(0, 360),
                                                       transforms.CenterCrop(321),
                                                       transforms.RandomTranslate(50),
-                                                      transforms.Resize(224224),
+                                                      transforms.Resize(224),
                                                       transforms.SelectRandomPos()])
     val_transform= torchvision.transforms.Compose([transforms.ConvertToRGD(),
                                                    transforms.SubtractImage(144),
