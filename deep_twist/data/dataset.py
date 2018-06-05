@@ -38,7 +38,8 @@ class CornellGraspDataset(Dataset):
 
 
 def load_dataset(root_dir, train_split=0.6, val_split=0.2, transform=None):
-    dataset = CornellGraspDataset(root_dir=root_dir, transform=transform)
+    train_dataset = CornellGraspDataset(root_dir=root_dir, transform=transform)
+    test_dataset = CornellGraspDataset
     train_count = int(train_split * len(dataset))
     val_count = int(val_split * len(dataset))
     test_count = len(dataset) - (train_count + val_count)
