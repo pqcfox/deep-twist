@@ -1,5 +1,6 @@
 import torch
-from torchvision import transforms
+import numpy as np
+from skimage import transform
 
 """
 class RandomTranslate(object):
@@ -17,23 +18,27 @@ class RandomTranslate(object):
         new_gt[1] += y_shift
         return new_img, new_gt
 
+"""
 
 class Resize(object):
     def __init__(self, new_size):
         self.new_size = new_size
 
     def __call__(self, sample):
-        img, gt = sample
-        h, w = img.size[:2]
-        new_img = transforms.functional.resize(img, (self.new_size,
-            self.new_size)) 
-        new_gt = np.copy(gt)
-        new_gt[0] *= self.new_size/w
-        new_gt[1] *= self.new_size/h
-        new_gt[3] *= self.new_size/w
-        new_gt[4] *= self.new_size/h
-        return new_img, new_gt
-"""
+        rgb, depth, pos = sample
+        h, w = rgb.shape[:2]
+        new_rgb = transform.resize(rgb, (self.new_size, self.new_size), 
+                preserve_range=True, mode='constant').astype('uint8')
+        new_depth = transform.resize(depth, (self.new_size, self.new_size),
+                preserve_range=True, mode='constant')
+        new_pos = []
+        for rect in pos:
+            new_pos.append((rect[0] * self.new_size/w,
+                            rect[1] * self.new_size/h,
+                            rect[2],
+                            rect[3] * self.new_size/w,
+                            rect[4] * self.new_size/h))
+        return new_rgb, new_depth, new_pos
 
 
 class CenterCrop(object):

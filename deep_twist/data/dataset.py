@@ -1,5 +1,6 @@
 import os
 import re
+import numpy as np
 from torch.utils.data import Dataset
 from torchvision import transforms
 from skimage import io
@@ -31,5 +32,6 @@ class CornellGraspDataset(Dataset):
         pos = utils.parse_rects(pos_path, id)
 
         if self.transform:
+            depth_scale = np.max(depth)
             rgb, depth, pos = self.transform((rgb, depth, pos))
         return rgb, depth, pos
