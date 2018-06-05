@@ -5,10 +5,8 @@ sys.path.append(dirname(dirname(realpath(__file__))))
 from skimage import io
 
 from deep_twist.data import dataset, transforms, utils
+from deep_twist.train.train_utils import train_dataset
 
-
-train_dataset = dataset.CornellGraspDataset(root_dir='cornell',
-        transform=transforms.RandomRotate(0, 360))
 
 rgb, depth, pos = train_dataset[0]
 io.imsave('rgb.png', utils.draw_rectangle(rgb, pos[0]))

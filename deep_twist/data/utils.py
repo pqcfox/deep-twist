@@ -4,7 +4,7 @@ from skimage import draw
 
 
 def point_mid(a, b):
-    return ((a[0] + b[0])/2, (a[1] + b[1])/2)
+    return ((a[0] + b[0])/2, (a[1] + b[1])/2) 
 
 
 def point_dist(a, b):
@@ -15,19 +15,6 @@ def point_dist(a, b):
 def point_angle(a, b):
     dx, dy = a[0] - b[0], a[1] - b[1]
     return np.degrees(np.arctan2(dy, dx)) + 90
-
-
-def parse_depth(depth_path, depth_shape):
-    depth = np.zeros(depth_shape)
-    width = depth.shape[1]
-    with open(depth_path) as f:
-        for line in f.read().splitlines():
-            if line[0].isdigit():
-                values = line.split(' ')
-                z, depth_idx = float(values[2]), int(values[4])
-                row, col = depth_idx // width, depth_idx % width
-                depth[row, col] = z
-    return depth
 
 
 def points_to_rect(points):
@@ -59,6 +46,8 @@ def draw_rectangle(rgb, rect):
         point_to = points[(i + 1) % 4]
         rr, cc = draw.line(int(point_from[1]), int(point_from[0]), 
                                 int(point_to[1]), int(point_to[0]))
+        pairs = [(r, c) for r, c in zip(rr, cc) if r < rgb.shape[0] and c < rgb.shape[1]]
+        rr, cc = [list(l) for l in zip(*pairs)]
         rgb[rr, cc, 0] = 0 if i % 2 == 0 else 255
         rgb[rr, cc, 1:] = 255 if i % 2 == 0 else 0
     return rgb
@@ -84,3 +73,16 @@ def parse_rects(rect_path, id):
             rect = points_to_rect(points)
             rects.append(rect)
     return rects
+
+
+def parse_depth(depth_path, depth_shape):
+    depth = np.zeros(depth_shape)
+    width = depth.shape[1]
+    with open(depth_path) as f:
+        for line in f.read().splitlines():
+            if line[0].isdigit():
+                values = line.split(' ')
+                z, depth_idx = float(values[2]), int(values[4])
+                row, col = depth_idx // width, depth_idx % width
+                depth[row, col] = z
+    return depth
