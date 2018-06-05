@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from skimage import draw
 
+
 def point_mid(a, b):
     return ((a[0] + b[0])/2, (a[1] + b[1])/2)
 
@@ -83,4 +84,3 @@ def parse_rects(rect_path, id):
             rect = points_to_rect(points)
             rects.append(rect)
     return rects
-

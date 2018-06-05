@@ -1,18 +1,10 @@
 import os
 import re
-import numpy as np
-import shapely.geometry 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms, models
-from skimage import io, transform
-from tqdm import tqdm
+from torch.utils.data import Dataset
+from torchvision import transforms
+from skimage import io
 
 import dataset_utils
-import transforms
 
 
 class CornellGraspDataset(Dataset):
@@ -43,29 +35,3 @@ class CornellGraspDataset(Dataset):
             rgb, depth, pos = self.transform((rgb, depth, pos))
             rgb = transforms.functional.to_tensor(rgb)
         return rgb, depth, pos
-
-
-dataset = CornellGraspDataset('cornell')
-
-
-
-
-"""
-
-class ResNetGrasp(nn.Module):
-    def __init__(self):
-        super(ResNetGrasp, self).__init__()
-        self.resnet = models.resnet50(pretrained=True)
-        self.features = nn.Sequential(*list(self.resnet.children())[:-1])
-
-        num_ftrs = self.resnet.fc.in_features
-        self.classifier = nn.Sequential(
-            nn.Linear(num_ftrs, 128),
-            nn.ReLU(),
-            nn.Linear(128, 5))
-
-    def forward(self, x):
-        x = self.features(x)
-        x = x.view(x.size(0), -1)
-        return self.classifier(x)
-"""
