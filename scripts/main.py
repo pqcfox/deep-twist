@@ -8,8 +8,8 @@ from deep_twist.data import dataset, transforms, utils
 
 
 train_dataset = dataset.CornellGraspDataset(root_dir='cornell',
-        transform=transforms.Resize(351))
+        transform=transforms.RandomRotate(0, 360))
 
-io.imsave('rgb.png', utils.draw_rectangle(train_dataset[0][0],
-          train_dataset[0][2][0]))
-plt.imsave('depth.png', train_dataset[0][1], cmap=plt.cm.jet)
+rgb, depth, pos = train_dataset[0]
+io.imsave('rgb.png', utils.draw_rectangle(rgb, pos[0]))
+plt.imsave('depth.png', depth, cmap=plt.cm.jet)

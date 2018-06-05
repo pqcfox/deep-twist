@@ -2,23 +2,61 @@ import torch
 import numpy as np
 from skimage import transform
 
-"""
+
+class RandomRotate(object):
+    def __init__(self, min_angle, max_angle):
+        self.min_angle = min_angle
+        self.max_angle = max_angle
+        self.range = self.max_angle - self.min_angle
+
+    def __call__(self, sample):
+        rgb, depth, pos = sample
+        angle = np.random.rand() * self.range + self.min_angle
+        angle_rad = np.radians(angle)
+        new_rgb = transform.rotate(rgb, angle, preserve_range=True).astype('uint8')
+        new_depth = transform.rotate(depth, angle, preserve_range=True)
+        new_pos = []
+        x_center = rgb.shape[1] / 2
+        y_center = rgb.shape[0] / 2
+        print(x_center)
+        print(y_center)
+        for rect in pos[:1]:
+            x_prime, y_prime = rect[0] - x_center, rect[1] - y_center
+            print((x_prime, y_prime))
+            x_rot = int(np.cos(-angle_rad) * x_prime - np.sin(-angle_rad) * y_prime)
+            y_rot = int(np.sin(-angle_rad) * x_prime + np.cos(-angle_rad) * y_prime)
+            print((x_rot, y_rot))
+            new_pos.append((x_rot + x_center,
+                            y_rot + y_center,
+                            rect[2] - angle,
+                            rect[3],
+                            rect[4]))
+            
+        return new_rgb, new_depth, new_pos
+
+
+
 class RandomTranslate(object):
     def __init__(self, shift):
         self.shift = shift
 
     def __call__(self, sample):
-        img, gt = sample
+        rgb, depth, pos = sample
         x_shift = np.random.randint(-self.shift, self.shift)
         y_shift = np.random.randint(-self.shift, self.shift)
         shift = (x_shift, y_shift)
-        new_img = transforms.functional.affine(img, 0, shift, 1, 0)
-        new_gt = np.copy(gt)
-        new_gt[0] += x_shift
-        new_gt[1] += y_shift
-        return new_img, new_gt
+        st = transform.SimilarityTransform(translation=shift)
+        new_rgb = transform.warp(rgb, st, preserve_range=True).astype('uint8')
+        new_depth = transform.warp(depth, st, preserve_range=True)
+        new_pos = []
+        for rect in pos:
+            new_pos.append((rect[0] - x_shift,
+                            rect[1] - y_shift,
+                            rect[2],
+                            rect[3],
+                            rect[4]))
+        return new_rgb, new_depth, new_pos
 
-"""
 
 class Resize(object):
     def __init__(self, new_size):
@@ -56,15 +94,3 @@ class CenterCrop(object):
         for rect in pos:
             new_pos.append((rect[0] - j, rect[1] - i, rect[2], rect[3], rect[4]))
         return new_rgb, new_depth, new_pos
-
-
-"""
-class GraspNormalize(object):
-    def __init__(self, mean, std):
-        self.mean = torch.FloatTensor(mean)
-        self.std = torch.FloatTensor(std)
-
-    def __call__(self, sample):
-        img, gt = sample
-        return img, (gt - self.mean)/self.std
-"""
