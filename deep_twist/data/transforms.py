@@ -1,5 +1,7 @@
 import torch
+from torchvision import transforms
 
+"""
 class RandomTranslate(object):
     def __init__(self, shift):
         self.shift = shift
@@ -31,6 +33,7 @@ class Resize(object):
         new_gt[3] *= self.new_size/w
         new_gt[4] *= self.new_size/h
         return new_img, new_gt
+"""
 
 
 class CenterCrop(object):
@@ -38,17 +41,19 @@ class CenterCrop(object):
         self.new_size = new_size
 
     def __call__(self, sample):
-        img, gt = sample
-        h, w = img.size[:2]
+        rgb, depth, pos = sample
+        h, w = rgb.shape[:2]
         i = (h - self.new_size)//2
         j = (w - self.new_size)//2
-        new_img = transforms.functional.crop(img, i, j, self.new_size, self.new_size) 
-        new_gt = np.copy(gt)
-        new_gt[0] -= j
-        new_gt[1] -= i
-        return new_img, new_gt
+        new_rgb = rgb[i:i+self.new_size, j:j+self.new_size]
+        new_depth = depth[i:i+self.new_size, j:j+self.new_size]
+        new_pos = []
+        for rect in pos:
+            new_pos.append((rect[0] - j, rect[1] - i, rect[2], rect[3], rect[4]))
+        return new_rgb, new_depth, new_pos
 
 
+"""
 class GraspNormalize(object):
     def __init__(self, mean, std):
         self.mean = torch.FloatTensor(mean)
@@ -57,3 +62,4 @@ class GraspNormalize(object):
     def __call__(self, sample):
         img, gt = sample
         return img, (gt - self.mean)/self.std
+"""

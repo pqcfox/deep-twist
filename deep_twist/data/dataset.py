@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 from skimage import io
 
-import dataset_utils
+from deep_twist.data import utils 
 
 
 class CornellGraspDataset(Dataset):
@@ -26,12 +26,10 @@ class CornellGraspDataset(Dataset):
         rgb_path = os.path.join(self.root_dir, 'pcd{}r.png'.format(id))
         rgb = io.imread(rgb_path)
         depth_path = os.path.join(self.root_dir, 'pcd{}.txt'.format(id))
-        depth = dataset_utils.parse_depth(depth_path, rgb.shape[:2])
+        depth = utils.parse_depth(depth_path, rgb.shape[:2])
         pos_path = os.path.join(self.root_dir, 'pcd{}cpos.txt'.format(id))
-        pos = dataset_utils.parse_rects(pos_path, id)
+        pos = utils.parse_rects(pos_path, id)
 
         if self.transform:
-            rgb = transforms.functional.to_pil_image(rgb)
             rgb, depth, pos = self.transform((rgb, depth, pos))
-            rgb = transforms.functional.to_tensor(rgb)
         return rgb, depth, pos
