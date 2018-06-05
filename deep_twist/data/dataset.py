@@ -1,5 +1,6 @@
 import os
 import re
+import torch
 import numpy as np
 from torch.utils.data import Dataset
 from torchvision import transforms
@@ -33,4 +34,9 @@ class CornellGraspDataset(Dataset):
 
         if self.transform:
             rgb, depth, pos = self.transform((rgb, depth, pos))
+
+        rgb = torch.FloatTensor(rgb)
+        depth = torch.FloatTensor(depth)
+        pos = [torch.FloatTensor(rect) for rect in pos]
+        rgb = rgb.permute(2, 0, 1)
         return rgb, depth, pos

@@ -18,14 +18,10 @@ class RandomRotate(object):
         new_pos = []
         x_center = rgb.shape[1] / 2
         y_center = rgb.shape[0] / 2
-        print(x_center)
-        print(y_center)
         for rect in pos[:1]:
             x_prime, y_prime = rect[0] - x_center, rect[1] - y_center
-            print((x_prime, y_prime))
             x_rot = int(np.cos(-angle_rad) * x_prime - np.sin(-angle_rad) * y_prime)
             y_rot = int(np.sin(-angle_rad) * x_prime + np.cos(-angle_rad) * y_prime)
-            print((x_rot, y_rot))
             new_pos.append((x_rot + x_center,
                             y_rot + y_center,
                             rect[2] - angle,
@@ -104,8 +100,6 @@ class ConvertToRGD(object):
         closest, furthest = np.min(depth), np.max(depth)
         depth -= closest
         depth *= 255 / (furthest - closest)
-        print(np.min(depth))
-        print(np.max(depth))
         rgb[:, :, 2] = depth
         return rgb, depth, pos
 

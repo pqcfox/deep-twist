@@ -18,6 +18,7 @@ from deep_twist.train import utils as train_utils
 parser = argparse.ArgumentParser(description='DeepTwist Grasp Detection Network')
 parser.add_argument('--batch-size', type=int, default=32, 
                     help='batch size for training and validation') 
+parser.add_argument('--epochs', type=int, default=1, help='number of epochs to train') 
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate') 
 parser.add_argument('--model', nargs='?', type=str, default='random', help='model to train') 
 args = parser.parse_args()
@@ -30,12 +31,12 @@ def main():
                                                       transforms.RandomRotate(0, 360),
                                                       transforms.CenterCrop(321),
                                                       transforms.RandomTranslate(50),
-                                                      transforms.Resize(227),
+                                                      transforms.Resize(224224),
                                                       transforms.SelectRandomPos()])
     val_transform= torchvision.transforms.Compose([transforms.ConvertToRGD(),
                                                    transforms.SubtractImage(144),
                                                    transforms.CenterCrop(321),
-                                                   transforms.Resize(227),
+                                                   transforms.Resize(224),
                                                    transforms.SelectRandomPos()])
 
     train_dataset = dataset.CornellGraspDataset('cornell/train', transform=train_transform)
@@ -44,7 +45,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True)
     
     if args.model == 'random':
-        model = deep_twist.models.baseline.Random()
+        model = deep_twist.models.baseline.Simple()
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     train_utils.train_model(args, model, train_loader, val_loader, optimizer)
