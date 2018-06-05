@@ -1,8 +1,7 @@
 import os
 import re
 import numpy as np
-import shapely.geometry
-
+import shapely.geometry 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -46,7 +45,6 @@ class CornellGraspDataset(Dataset):
 
 
 dataset = CornellGraspDataset('cornell')
-print(dataset[0])
 
 
 """
