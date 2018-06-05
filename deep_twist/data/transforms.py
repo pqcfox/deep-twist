@@ -35,7 +35,6 @@ class RandomRotate(object):
         return new_rgb, new_depth, new_pos
 
 
-
 class RandomTranslate(object):
     def __init__(self, shift):
         self.shift = shift
@@ -102,13 +101,13 @@ class ConvertToRGD(object):
 
     def __call__(self, sample):
         rgb, depth, pos = sample
-        closest, furtheset = np.min(depth), np.max(depth)
+        closest, furthest = np.min(depth), np.max(depth)
         depth -= closest
         depth *= 255 / (furthest - closest)
-        print(np.min(scaled_depth))
-        print(np.max(scaled_depth))
+        print(np.min(depth))
+        print(np.max(depth))
         rgb[:, :, 2] = depth
-        return rgb, pos
+        return rgb, depth, pos
 
 
 class SelectRandomPos(object):
@@ -116,5 +115,15 @@ class SelectRandomPos(object):
         pass
 
     def __call__(self, sample):
-        rgb, pos = sample
-        return rgb, [np.random.choice(pos)]
+        rgb, depth, pos = sample
+        idx = np.random.choice(len(pos))
+        return rgb, depth, [pos[idx]]
+
+
+class SubtractImage(object):
+    def __init__(self, mean):
+        self.mean = mean 
+
+    def __call__(self, sample):
+        rgb, depth, pos = sample
+        return rgb - self.mean, depth, pos

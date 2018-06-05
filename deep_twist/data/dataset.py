@@ -1,7 +1,7 @@
 import os
 import re
 import numpy as np
-from torch.utils.data import Dataset, random_split
+from torch.utils.data import Dataset
 from torchvision import transforms
 from skimage import io
 
@@ -32,15 +32,5 @@ class CornellGraspDataset(Dataset):
         pos = utils.parse_rects(pos_path, id)
 
         if self.transform:
-            depth_scale = np.max(depth)
             rgb, depth, pos = self.transform((rgb, depth, pos))
         return rgb, depth, pos
-
-
-def load_dataset(root_dir, train_split=0.6, val_split=0.2, transform=None):
-    train_dataset = CornellGraspDataset(root_dir=root_dir, transform=transform)
-    test_dataset = CornellGraspDataset
-    train_count = int(train_split * len(dataset))
-    val_count = int(val_split * len(dataset))
-    test_count = len(dataset) - (train_count + val_count)
-    return random_split(dataset, [train_count, val_count, test_count])
