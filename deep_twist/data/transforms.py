@@ -94,3 +94,27 @@ class CenterCrop(object):
         for rect in pos:
             new_pos.append((rect[0] - j, rect[1] - i, rect[2], rect[3], rect[4]))
         return new_rgb, new_depth, new_pos
+
+
+class ConvertToRGD(object):
+    def __init__(self):
+        pass
+
+    def __call__(self, sample):
+        rgb, depth, pos = sample
+        closest, furtheset = np.min(depth), np.max(depth)
+        depth -= closest
+        depth *= 255 / (furthest - closest)
+        print(np.min(scaled_depth))
+        print(np.max(scaled_depth))
+        rgb[:, :, 2] = depth
+        return rgb, pos
+
+
+class SelectRandomPos(object):
+    def __init__(self):
+        pass
+
+    def __call__(self, sample):
+        rgb, pos = sample
+        return rgb, [np.random.choice(pos)]
