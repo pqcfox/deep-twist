@@ -46,9 +46,11 @@ def main():
     
     if args.model == 'random':
         model = deep_twist.models.baseline.Simple()
+        loss = deep_twist.models.baseline.softmax_l2_loss
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    train_utils.train_model(args, model, train_loader, val_loader, optimizer)
+    print(data_utils.discretize_theta(341))
+    train_utils.train_model(args, model, loss, train_loader, val_loader, optimizer)
     
 
 if __name__ == '__main__':

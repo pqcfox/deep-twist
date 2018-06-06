@@ -86,3 +86,10 @@ def parse_depth(depth_path, depth_shape):
                 row, col = depth_idx // width, depth_idx % width
                 depth[row, col] = z
     return depth
+
+
+def discretize_theta(theta, ticks=19, has_no_grasp=False):
+    new_theta = torch.zeros(ticks + (1 if has_no_grasp else 0), dtype=torch.long)
+    index = int(np.rint((theta % 360) * ticks / 360) % ticks)
+    new_theta[index] = 1
+    return new_theta
