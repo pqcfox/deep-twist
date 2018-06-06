@@ -17,7 +17,7 @@ def train_model(args, model, loss, train_loader, val_loader, optimizer):
             running_loss += loss_val * rgd.size(0)
             rects = utils.one_hot_to_rects(*output)
             num_correct = eval_utils.count_correct(rects, pos)
-            running_acc += num_correct * rgd.size(0) 
+            running_acc += num_correct
             optimizer.step()
             if batch % args.log_interval == 0:
                 print('[TRAIN] Epoch {}/{}, Batch {}/{}, Loss: {}, Acc: {}'.format(epoch + 1, 
