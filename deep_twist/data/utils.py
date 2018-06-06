@@ -19,7 +19,7 @@ def point_angle(a, b):
 
 def points_to_rect(points):
     x, y = point_mid(points[0], points[2])
-    theta = point_angle(points[1], points[2])
+    theta = point_angle(points[1], points[2]) % 180
     w = point_dist(points[0], points[1])
     h = point_dist(points[1], points[2])
     return x, y, theta, w, h
@@ -89,7 +89,7 @@ def parse_depth(depth_path, depth_shape):
 
 
 def discretize_theta(theta, ticks=19):
-    return (np.rint((theta % 360) * ticks / 360) % ticks).long()
+    return (np.rint((theta % 180) * ticks / 180) % ticks).long()
 
 
 def one_hot_to_rects(theta, rect_coords):

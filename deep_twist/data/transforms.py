@@ -24,7 +24,7 @@ class RandomRotate(object):
             y_rot = int(np.sin(-angle_rad) * x_prime + np.cos(-angle_rad) * y_prime)
             new_pos.append((x_rot + x_center,
                             y_rot + y_center,
-                            rect[2] - angle,
+                            (rect[2] - angle) % 180,
                             rect[3],
                             rect[4]))
             

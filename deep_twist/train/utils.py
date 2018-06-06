@@ -1,3 +1,4 @@
+import torch
 import torchvision
 from deep_twist.data import utils, dataset, transforms
 from deep_twist.evaluate import utils as eval_utils
@@ -16,8 +17,13 @@ def train_model(args, model, loss, train_loader, val_loader, optimizer):
             loss_val.backward()
             running_loss += loss_val * rgd.size(0)
             rects = utils.one_hot_to_rects(*output)
+            for i in range(rgd.size(0)):
+                img = (rgd[i].permute((1, 2, 0))).long()
+                rect_img = utils.draw_rectangle(utils.draw_rectangle(img,
+                    rects[i]), pos[0][i, :])
+                io.imsave('whoa-{}-{}.png'.format(i, epoch), rect_img)
             num_correct = eval_utils.count_correct(rects, pos)
-            running_acc += num_correct * rgd.size(0) 
+            running_acc += num_correct
             optimizer.step()
             if batch % args.log_interval == 0:
                 print('[TRAIN] Epoch {}/{}, Batch {}/{}, Loss: {}, Acc: {}'.format(epoch + 1, 
