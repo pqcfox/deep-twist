@@ -19,8 +19,8 @@ def overlap(rect1, rect2):
 
 
 def angles_similar(angle1, angle2, thresh):
-    mod_diff = (angle2 - angle1) % 360
-    return mod_diff <= thresh or mod_diff >= 360 - thresh
+    mod_diff = (angle2 - angle1) % 180
+    return mod_diff <= thresh or mod_diff >= 180 - thresh
 
 
 def is_successful_grasp(rect, pos):
