@@ -3,6 +3,7 @@ from os.path import dirname, realpath
 sys.path.append(dirname(dirname(realpath(__file__))))
 
 import argparse
+import numpy as np
 import matplotlib.pyplot as plt
 import torchvision.transforms 
 
@@ -20,7 +21,9 @@ parser.add_argument('--batch-size', type=int, default=32,
                     help='batch size for training and validation') 
 parser.add_argument('--epochs', type=int, default=1, help='number of epochs to train') 
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate') 
+parser.add_argument('--log-interval', type=int, default=1, help='batches between logs')
 parser.add_argument('--model', nargs='?', type=str, default='random', help='model to train') 
+parser.add_argument('--val-interval', type=int, default=1, help='epochs between validations')
 args = parser.parse_args()
 
 
@@ -49,7 +52,6 @@ def main():
         loss = deep_twist.models.baseline.softmax_l2_loss
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    print(data_utils.discretize_theta(341))
     train_utils.train_model(args, model, loss, train_loader, val_loader, optimizer)
     
 

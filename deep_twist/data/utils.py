@@ -26,7 +26,7 @@ def points_to_rect(points):
 
 
 def rect_to_points(rect):
-    x, y, theta, w, h = rect
+    x, y, theta, w, h = rect.numpy()
     theta_rad = np.radians(theta)
     points = []
     base_points = [(-w, h), (w, h), (w, -h), (-w, -h)]
@@ -88,8 +88,18 @@ def parse_depth(depth_path, depth_shape):
     return depth
 
 
-def discretize_theta(theta, ticks=19, has_no_grasp=False):
-    new_theta = torch.zeros(ticks + (1 if has_no_grasp else 0), dtype=torch.long)
-    index = int(np.rint((theta % 360) * ticks / 360) % ticks)
-    new_theta[index] = 1
-    return new_theta
+def discretize_theta(theta, ticks=19):
+    return (np.rint((theta % 360) * ticks / 360) % ticks).long()
+
+
+def one_hot_to_rects(theta, rect_coords):
+    rects = []
+    for i in range(theta.size(0)):
+        theta_val = torch.argmax(theta[i, :])
+        rect = torch.FloatTensor((rect_coords[i, 0],
+                                  rect_coords[i, 1],
+                                  theta_val,
+                                  rect_coords[i, 2],
+                                  rect_coords[i, 3]))
+        rects.append(rect)
+    return rects
