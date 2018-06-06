@@ -39,7 +39,7 @@ def rect_to_points(rect):
     return points
 
 
-def draw_rectangle(rgb, rect):
+def draw_rectangle(rgb, rect, highlight=False):
     points = rect_to_points(rect)
     for i in range(len(points)):
         point_from = points[i]
@@ -47,9 +47,15 @@ def draw_rectangle(rgb, rect):
         rr, cc = draw.line(int(point_from[1]), int(point_from[0]), 
                                 int(point_to[1]), int(point_to[0]))
         pairs = [(r, c) for r, c in zip(rr, cc) if r < rgb.shape[0] and c < rgb.shape[1]]
-        rr, cc = [list(l) for l in zip(*pairs)]
-        rgb[rr, cc, 0] = 0 if i % 2 == 0 else 255
-        rgb[rr, cc, 1:] = 255 if i % 2 == 0 else 0
+        if len(pairs) > 0:
+            rr, cc = [list(l) for l in zip(*pairs)]
+            if not highlight:
+                rgb[rr, cc, 0] = 0 if i % 2 == 0 else 255
+                rgb[rr, cc, 1:] = 255 if i % 2 == 0 else 0
+            else:
+                rgb[rr, cc, 0] = 0
+                rgb[rr, cc, 1] = 255
+                rgb[rr, cc, 2] = 255 if i % 2 == 0 else 0 
     return rgb
         
 
@@ -92,10 +98,11 @@ def discretize_theta(theta, ticks=19):
     return (np.rint((theta % 180) * ticks / 180) % ticks).long()
 
 
-def one_hot_to_rects(theta, rect_coords):
+def one_hot_to_rects(theta, rect_coords, ticks=19):
     rects = []
     for i in range(theta.size(0)):
-        theta_val = torch.argmax(theta[i, :])
+        theta_val = torch.argmax(theta[i, :]) * 180 / ticks
+        print(theta_val)
         rect = torch.FloatTensor((rect_coords[i, 0],
                                   rect_coords[i, 1],
                                   theta_val,

@@ -12,17 +12,15 @@ def softmax_l2_loss(output, pos, lambda1=0.1):
     l2 = nn.MSELoss()
     theta_target = utils.discretize_theta(rect[:, 2], ticks=20)
     rect_target = torch.cat((rect[:, :2], rect[:, -2:]), 1)
-    print('Softmax:')
-    print(softmax(theta, theta_target))
-    print('L2:')
-    print(l2(rect_coords, rect_target))
+    print(theta)
+    print(theta_target)
     return softmax(theta, theta_target) + lambda1 * l2(rect_coords, rect_target)
 
 
 class Simple(nn.Module):
     def __init__(self):
         super(Simple, self).__init__()
-        resnet = models.resnet18(pretrained=True)
+        resnet = models.resnet50(pretrained=True)
         self.model_ft = nn.Sequential(*list(resnet.children())[:-1])
         self.theta_out = nn.Linear(resnet.fc.in_features, 20)
         self.box_fc = nn.Linear(resnet.fc.in_features, 80)

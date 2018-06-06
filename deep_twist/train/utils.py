@@ -17,10 +17,13 @@ def train_model(args, model, loss, train_loader, val_loader, optimizer):
             loss_val.backward()
             running_loss += loss_val * rgd.size(0)
             rects = utils.one_hot_to_rects(*output)
-            for i in range(rgd.size(0)):
+            print(rects)
+            pos = [pos[0]] # TODO: REEEEMOVE
+            for i in range(rgd.size(0)): # TODO: REEEEMOVE
                 img = (rgd[i].permute((1, 2, 0))).long()
-                rect_img = utils.draw_rectangle(utils.draw_rectangle(img,
-                    rects[i]), pos[0][i, :])
+                rect_img = utils.draw_rectangle(img, rects[i], highlight=True)
+                for j in range(len(pos)):
+                    rect_img = utils.draw_rectangle(rect_img, pos[j][i, :])
                 io.imsave('whoa-{}-{}.png'.format(i, epoch), rect_img)
             num_correct = eval_utils.count_correct(rects, pos)
             running_acc += num_correct

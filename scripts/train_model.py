@@ -22,7 +22,7 @@ parser.add_argument('--batch-size', type=int, default=1,
 parser.add_argument('--epochs', type=int, default=30, help='number of epochs to train') 
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate') 
 parser.add_argument('--log-interval', type=int, default=1, help='batches between logs')
-parser.add_argument('--model', nargs='?', type=str, default='random', help='model to train') 
+parser.add_argument('--model', nargs='?', type=str, default='simple', help='model to train') 
 parser.add_argument('--val-interval', type=int, default=100, help='epochs between validations')
 args = parser.parse_args()
 
@@ -43,13 +43,14 @@ def main():
 
     train_dataset = dataset.CornellGraspDataset('cornell/train_mini',
             transform=val_transform) # TODO: CHANGE BACK
+    print(len(train_dataset))
     val_dataset = dataset.CornellGraspDataset('cornell/val', transform=val_transform)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
             shuffle=False)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size,
             shuffle=False)
     
-    if args.model == 'random':
+    if args.model == 'simple':
         model = deep_twist.models.baseline.Simple()
         loss = deep_twist.models.baseline.softmax_l2_loss
 

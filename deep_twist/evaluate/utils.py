@@ -27,8 +27,6 @@ def is_successful_grasp(rect, pos):
     for pos_rect in pos:
         is_overlapping = (overlap(rect, pos_rect) > 0.25)
         is_aligned = angles_similar(rect[2], pos_rect[2], 30)
-        print('OVERLAPPING: {}'.format(is_overlapping))
-        print('ALIGNED: {}'.format(is_aligned))
         if is_overlapping and is_aligned:
             return True
     return False
