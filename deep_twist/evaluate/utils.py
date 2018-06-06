@@ -14,7 +14,8 @@ def eval_model(args, model, data_loader):
 def overlap(rect1, rect2):
     poly1 = Polygon(utils.rect_to_points(rect1)) 
     poly2 = Polygon(utils.rect_to_points(rect2))
-    return poly1.intersection(poly2).area / poly1.union(poly2).area
+    intersect = poly1.intersection(poly2).area
+    return intersect / (poly1.area + poly2.area - intersect)
 
 
 def angles_similar(angle1, angle2, thresh):
@@ -26,6 +27,8 @@ def is_successful_grasp(rect, pos):
     for pos_rect in pos:
         is_overlapping = (overlap(rect, pos_rect) > 0.25)
         is_aligned = angles_similar(rect[2], pos_rect[2], 30)
+        print('OVERLAPPING: {}'.format(is_overlapping))
+        print('ALIGNED: {}'.format(is_aligned))
         if is_overlapping and is_aligned:
             return True
     return False

@@ -5,13 +5,17 @@ from torchvision import models
 import deep_twist.data.utils as utils
 
 
-def softmax_l2_loss(output, pos, lambda1=0.01):
+def softmax_l2_loss(output, pos, lambda1=0.1):
     rect = pos[0]
     theta, rect_coords = output
     softmax = nn.CrossEntropyLoss()
     l2 = nn.MSELoss()
     theta_target = utils.discretize_theta(rect[:, 2], ticks=20)
     rect_target = torch.cat((rect[:, :2], rect[:, -2:]), 1)
+    print('Softmax:')
+    print(softmax(theta, theta_target))
+    print('L2:')
+    print(l2(rect_coords, rect_target))
     return softmax(theta, theta_target) + lambda1 * l2(rect_coords, rect_target)
 
 

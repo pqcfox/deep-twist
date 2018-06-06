@@ -17,13 +17,13 @@ from deep_twist.data import utils as data_utils
 from deep_twist.train import utils as train_utils 
 
 parser = argparse.ArgumentParser(description='DeepTwist Grasp Detection Network')
-parser.add_argument('--batch-size', type=int, default=32, 
+parser.add_argument('--batch-size', type=int, default=1, 
                     help='batch size for training and validation') 
-parser.add_argument('--epochs', type=int, default=3, help='number of epochs to train') 
+parser.add_argument('--epochs', type=int, default=30, help='number of epochs to train') 
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate') 
 parser.add_argument('--log-interval', type=int, default=1, help='batches between logs')
 parser.add_argument('--model', nargs='?', type=str, default='random', help='model to train') 
-parser.add_argument('--val-interval', type=int, default=1, help='epochs between validations')
+parser.add_argument('--val-interval', type=int, default=100, help='epochs between validations')
 args = parser.parse_args()
 
 
@@ -36,16 +36,18 @@ def main():
                                                       transforms.RandomTranslate(50),
                                                       transforms.Resize(224),
                                                       transforms.SelectRandomPos()])
-    val_transform= torchvision.transforms.Compose([transforms.ConvertToRGD(),
-                                                   transforms.SubtractImage(144),
-                                                   transforms.CenterCrop(321),
-                                                   transforms.Resize(224),
-                                                   transforms.SelectRandomPos()])
+    val_transform = torchvision.transforms.Compose([transforms.ConvertToRGD(),
+                                                    transforms.SubtractImage(144),
+                                                    transforms.CenterCrop(321),
+                                                    transforms.Resize(224)]) 
 
-    train_dataset = dataset.CornellGraspDataset('cornell/train', transform=train_transform)
+    train_dataset = dataset.CornellGraspDataset('cornell/train_mini',
+            transform=val_transform) # TODO: CHANGE BACK
     val_dataset = dataset.CornellGraspDataset('cornell/val', transform=val_transform)
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
+            shuffle=False)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size,
+            shuffle=False)
     
     if args.model == 'random':
         model = deep_twist.models.baseline.Simple()
@@ -53,6 +55,7 @@ def main():
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     train_utils.train_model(args, model, loss, train_loader, val_loader, optimizer)
+    print('')
     
 
 if __name__ == '__main__':
