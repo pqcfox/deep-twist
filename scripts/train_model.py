@@ -19,6 +19,7 @@ from deep_twist.train import utils as train_utils
 parser = argparse.ArgumentParser(description='DeepTwist Grasp Detection Network')
 parser.add_argument('--batch-size', type=int, default=32, 
                     help='batch size for training and validation') 
+parser.add_argument('--device', nargs='?', type=str, default='cpu', help='device to use') 
 parser.add_argument('--epochs', type=int, default=30, help='number of epochs to train') 
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate') 
 parser.add_argument('--log-interval', type=int, default=1, help='batches between logs')

@@ -9,6 +9,8 @@ def eval_model(args, model, data_loader, progress=False):
     if progress:
         iter = tqdm(iter, total=len(data_loader))
     for batch, (rgd, _, pos) in iter:
+        rgd = rgd.to(args.device)
+        pos = [rect.to(args.device) for rect in pos]
         output = model(rgd)
         rects = utils.one_hot_to_rects(*output)
         total_correct += count_correct(rects, pos)

@@ -17,6 +17,7 @@ from deep_twist.evaluate import utils as eval_utils
 parser = argparse.ArgumentParser(description='DeepTwist Grasp Detection Network')
 parser.add_argument('--batch-size', type=int, default=32, 
                     help='batch size for training and validation') 
+parser.add_argument('--device', nargs='?', type=str, default='cpu', help='device to use') 
 parser.add_argument('--model', nargs='?', type=str, default='simple', help='model to train') 
 parser.add_argument('--model_file', nargs='?', type=str, default='best_model.pth.tar', 
                     help='model to evaluate') 

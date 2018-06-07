@@ -14,6 +14,8 @@ def train_model(args, model, loss, train_loader, val_loader, optimizer):
         running_loss = 0.0
         running_acc = 0.0
         for batch, (rgd, _, pos) in enumerate(train_loader):
+            rgd = rgd.to(args.device)
+            pos = [rect.to(args.device) for rect in pos]
             optimizer.zero_grad()
             output = model(rgd)
             loss_val = loss(output, pos)
