@@ -17,13 +17,13 @@ from deep_twist.data import utils as data_utils
 from deep_twist.train import utils as train_utils 
 
 parser = argparse.ArgumentParser(description='DeepTwist Grasp Detection Network')
-parser.add_argument('--batch-size', type=int, default=1, 
+parser.add_argument('--batch-size', type=int, default=32, 
                     help='batch size for training and validation') 
 parser.add_argument('--epochs', type=int, default=30, help='number of epochs to train') 
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate') 
 parser.add_argument('--log-interval', type=int, default=1, help='batches between logs')
 parser.add_argument('--model', nargs='?', type=str, default='simple', help='model to train') 
-parser.add_argument('--val-interval', type=int, default=100, help='epochs between validations')
+parser.add_argument('--val-interval', type=int, default=5, help='epochs between validations')
 args = parser.parse_args()
 
 
@@ -41,9 +41,7 @@ def main():
                                                     transforms.CenterCrop(321),
                                                     transforms.Resize(224)]) 
 
-    train_dataset = dataset.CornellGraspDataset('cornell/train_mini',
-            transform=val_transform) # TODO: CHANGE BACK
-    print(len(train_dataset))
+    train_dataset = dataset.CornellGraspDataset('cornell/train_mini', transform=train_transform)
     val_dataset = dataset.CornellGraspDataset('cornell/val', transform=val_transform)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size,
             shuffle=False)
@@ -56,7 +54,6 @@ def main():
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     train_utils.train_model(args, model, loss, train_loader, val_loader, optimizer)
-    print('')
     
 
 if __name__ == '__main__':

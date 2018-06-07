@@ -102,7 +102,6 @@ def one_hot_to_rects(theta, rect_coords, ticks=19):
     rects = []
     for i in range(theta.size(0)):
         theta_val = torch.argmax(theta[i, :]) * 180 / ticks
-        print(theta_val)
         rect = torch.FloatTensor((rect_coords[i, 0],
                                   rect_coords[i, 1],
                                   theta_val,
