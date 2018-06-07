@@ -5,9 +5,12 @@ from deep_twist.data import utils, dataset, transforms
 from deep_twist.evaluate import utils as eval_utils
 from skimage import io
 import shutil
+from model.faster_rcnn.faster_rcnn import _fasterRCNN
 
 
 def train_model(args, model, loss, train_loader, val_loader, optimizer):
+    if isinstance(model, _fasterRCNN):
+        model.create_architecture()
     model.train()
     best_acc = 0.0
     for epoch in range(args.epochs):
