@@ -1,10 +1,14 @@
 from deep_twist.data import utils
 from shapely.geometry import Polygon
+from tqdm import tqdm
 
 
-def eval_model(args, model, data_loader):
+def eval_model(args, model, data_loader, progress=False):
     total_correct = 0
-    for batch, (rgd, _, pos) in enumerate(data_loader):
+    iter = enumerate(data_loader) 
+    if progress:
+        iter = tqdm(iter, total=len(data_loader))
+    for batch, (rgd, _, pos) in iter:
         output = model(rgd)
         rects = utils.one_hot_to_rects(*output)
         total_correct += count_correct(rects, pos)
