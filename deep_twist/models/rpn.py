@@ -8,8 +8,9 @@ import deep_twist.data.utils as utils
 
 class DeepGrasp(_fasterRCNN):
     def __init__(self):
-        super(DeepGrasp, self).__init__(classes=20, class_agnostic=True)
+        angles = ['angle_{}'.format(i) for i in range(19)] + ['no_angle']
         self.dout_base_model = 1024
+        super(DeepGrasp, self).__init__(classes=angles, class_agnostic=True)
 
     def _init_modules(self):
         resnet = models.resnet50(pretrained=True)
@@ -25,11 +26,3 @@ class DeepGrasp(_fasterRCNN):
         
     def _head_to_tail(self, pool5):
         fc7 = self.RCNN_top(pool5).mean(3).mean(2)
-
-    def forward(self, x):
-        ft_out = self.model_ft(x)
-        ft_out = ft_out.view(ft_out.size(0), -1)
-        theta = self.theta_out(ft_out)
-        x = self.box_fc(ft_out)
-        rect_coords = self.box_out(x)
-        return (theta, rect_coords)

@@ -3,9 +3,7 @@ from os.path import dirname, realpath, join
 sys.path.append(dirname(dirname(realpath(__file__))))
 sys.path.append(join(dirname(dirname(realpath(__file__))),
                 'faster-rcnn.pytorch'))
-print(sys.path)
 import _init_paths
-
 
 import argparse
 import numpy as np

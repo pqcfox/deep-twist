@@ -9,7 +9,8 @@ from model.faster_rcnn.faster_rcnn import _fasterRCNN
 
 
 def train_model(args, model, loss, train_loader, val_loader, optimizer):
-    if isinstance(model, _fasterRCNN):
+    is_rcnn = isinstance(model, _fasterRCNN):
+    if is_rcnn:
         model.create_architecture()
     model.train()
     best_acc = 0.0
@@ -20,7 +21,10 @@ def train_model(args, model, loss, train_loader, val_loader, optimizer):
             rgd = rgd.to(args.device)
             pos = [rect.to(args.device) for rect in pos]
             optimizer.zero_grad()
-            output = model(rgd)
+            if is_rcnn:
+                output = model(
+            else:
+                output = model(rgd)
             loss_val = loss(output, pos)
             loss_val.backward()
             running_loss += loss_val * rgd.size(0)
