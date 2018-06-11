@@ -3,7 +3,7 @@ from shapely.geometry import Polygon
 from tqdm import tqdm
 
 
-def eval_model(args, model, data_loader, progress=False):
+def eval_model(args, model, data_loader, progress=False, one_hot=True):
     total_correct = 0
     iter = enumerate(data_loader) 
     if progress:
@@ -12,7 +12,10 @@ def eval_model(args, model, data_loader, progress=False):
         rgd = rgd.to(args.device)
         pos = [rect.to(args.device) for rect in pos]
         output = model(rgd)
-        rects = utils.one_hot_to_rects(*output)
+        if one_hot:
+            rects = utils.one_hot_to_rects(*output)
+        else:
+            rects = output
         total_correct += count_correct(rects, pos)
     return total_correct / len(data_loader.dataset)
 

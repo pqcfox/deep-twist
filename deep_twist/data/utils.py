@@ -26,7 +26,7 @@ def points_to_rect(points):
 
 
 def rect_to_points(rect):
-    x, y, theta, w, h = rect.numpy()
+    x, y, theta, w, h = rect.detach().numpy()
     theta_rad = np.radians(theta)
     points = []
     base_points = [(-w, h), (w, h), (w, -h), (-w, -h)]
@@ -46,7 +46,8 @@ def draw_rectangle(rgb, rect, highlight=False):
         point_to = points[(i + 1) % 4]
         rr, cc = draw.line(int(point_from[1]), int(point_from[0]), 
                                 int(point_to[1]), int(point_to[0]))
-        pairs = [(r, c) for r, c in zip(rr, cc) if r < rgb.shape[0] and c < rgb.shape[1]]
+        pairs = [(r, c) for r, c in zip(rr, cc) if 0 < r and r < rgb.shape[0]
+                and 0 < c and c < rgb.shape[1]]
         if len(pairs) > 0:
             rr, cc = [list(l) for l in zip(*pairs)]
             if not highlight:

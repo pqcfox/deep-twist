@@ -19,7 +19,7 @@ parser.add_argument('--batch-size', type=int, default=32,
                     help='batch size for training and validation') 
 parser.add_argument('--device', nargs='?', type=str, default='cpu', help='device to use') 
 parser.add_argument('--model', nargs='?', type=str, default='simple', help='model to train') 
-parser.add_argument('--model_file', nargs='?', type=str, default='best_model.pth.tar', 
+parser.add_argument('--model_file', nargs='?', type=str, default='best_model.pt', 
                     help='model to evaluate') 
 parser.add_argument('--use-val', dest='use_val', action='store_true',
                     help='use evaluation instead of test data') 
@@ -37,12 +37,8 @@ def main():
     path = 'cornell/val' if args.use_val else 'cornell/test'
     test_dataset = dataset.CornellGraspDataset(path, transform=transform)
     loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
-    checkpoint = torch.load(args.model_file)
+    model = torch.load(args.model_file)
 
-    if args.model == 'simple':
-        model = deep_twist.models.baseline.Simple()
-
-    model.load_state_dict(checkpoint)
     acc = eval_utils.eval_model(args, model, loader, progress=True)
     print('[{}] Acc: {}'.format('VAL' if args.use_val else 'TEST', acc))
     
